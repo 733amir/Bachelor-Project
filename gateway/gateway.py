@@ -3,6 +3,7 @@ from threading import Thread
 import paho.mqtt.client as mqtt
 from json import dumps as tojson, loads as fromjson
 from tree import Tree, IdentificationError
+from time import sleep
 
 
 class Gateway:
@@ -90,20 +91,8 @@ class Gateway:
 
 
 if __name__ == '__main__':
-    Gateway(config={
-        'id': 1,
-        'group-id': 1,
-        'type': 'server',
-        'keep-alive': 60,
-        'local-mqtt-broker/ip': 'localhost',
-        'local-mqtt-broker/port': 1883,
-
-        'parent-id': 0,
-        'parent-mqtt-broker/ip': 'localhost',
-        'parent-mqtt-broker/port': 1883,
-    })
-
-    # Thread(target=Gateway, args=[{
+    ######################## Single Server ##############################
+    # Gateway(config={
     #     'id': 1,
     #     'group-id': 1,
     #     'type': 'server',
@@ -114,16 +103,33 @@ if __name__ == '__main__':
     #     'parent-id': 0,
     #     'parent-mqtt-broker/ip': 'localhost',
     #     'parent-mqtt-broker/port': 1883,
-    # }]).start()
-    # Gateway(config={
-    #     'id': 2,
-    #     'group-id': 2,
-    #     'type': 'gateway',
-    #     'keep-alive': 60,
-    #     'local-mqtt-broker/ip': 'localhost',
-    #     'local-mqtt-broker/port': 1883,
-    #
-    #     'parent-id': 1,
-    #     'parent-mqtt-broker/ip': 'localhost',
-    #     'parent-mqtt-broker/port': 1883,
     # })
+
+    ############################## 1 Server and 1 Gateway ##############################
+    Thread(target=Gateway, args=[{
+        'id': 1,
+        'group-id': 1,
+        'type': 'server',
+        'keep-alive': 60,
+        'local-mqtt-broker/ip': 'localhost',
+        'local-mqtt-broker/port': 1883,
+
+        'parent-id': 0,
+        'parent-mqtt-broker/ip': 'localhost',
+        'parent-mqtt-broker/port': 1883,
+    }]).start()
+
+    sleep(1)
+
+    Gateway(config={
+        'id': 2,
+        'group-id': 2,
+        'type': 'gateway',
+        'keep-alive': 60,
+        'local-mqtt-broker/ip': 'localhost',
+        'local-mqtt-broker/port': 1883,
+
+        'parent-id': 1,
+        'parent-mqtt-broker/ip': 'localhost',
+        'parent-mqtt-broker/port': 1883,
+    })
