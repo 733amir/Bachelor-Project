@@ -90,9 +90,9 @@ int getLDR() {
 }
 
 // ######################### WiFi & MQTT #########################
-IPAddress server(192, 168, 1, 35); // MQTT Broker address
-char ssid[] = "-=-=-=-=-=-=-=-";               // Network SSID (name)
-char pass[] = "282483191413";               // Network password (secret)
+char server[] = "192.168.43.26"; // MQTT Broker address
+char ssid[]   = "Geamny (M)";               // Network SSID (name)
+char pass[]   = "q1w2e3r4t5y6u7i8o9p0";               // Network password (secret)
 int status = WL_IDLE_STATUS;       // Wifi radio's status
 
 SoftwareSerial soft(9, 8);         // RX, TX to communicate with ESP8266
@@ -100,7 +100,7 @@ WiFiEspClient espClient;
 PubSubClient client(espClient);
 
 void WiFiSetup() {
-  soft.begin(9600);
+  soft.begin(57600);
   WiFi.init(&soft);
 
   if (WiFi.status() == WL_NO_SHIELD) {
@@ -110,11 +110,11 @@ void WiFiSetup() {
   }
 
 //  Serial.print("Attempting to connect t/o WPA SSID: ");
-//  Serial.print(ssid);/
-//  Serial.print(" ");/
+//  Serial.print(ssid);
+//  Serial.print(" ");
   while (status != WL_CONNECTED) {
     // Connect to WPA/WPA2 network
-//    Serial.print(".");/
+//    Serial.print(".");
     status = WiFi.begin(ssid, pass);
   }
 //  Serial.println(" Connec/ted.");
@@ -132,6 +132,7 @@ void MQTTSetup() {
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
+  LCDSetDebugMessage(payload, length);
   Serial.print("] ");
   for (int i=0;i<length;i++) {
     Serial.print((char)payload[i]);
@@ -194,6 +195,8 @@ void loop() {
     client.loop();
   }
 
-  if (millis() - mSecond > 33)
+  if (millis() - mSecond > 50) {
+    mSecond = millis();
     client.loop();
+  }
 }
